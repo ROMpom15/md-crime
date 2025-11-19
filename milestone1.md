@@ -32,7 +32,7 @@ This problem is important because crime prevention on college campuses is an ong
 **Why does it require big data technologies?**
 [Explain the scale, velocity, or complexity that necessitates distributed computing]
 
-Our team is using big data technologies because the data we are working with is over 100 raw megabytes. The sheer scale of data we are working with requires big data technology, as well as the speed that we want it done. 
+Our team is using big data technologies (at a 100s of MB scale) in order to develop a pipeline suitable for scaling to GB or TB dimensions. We seek to design a product that could scale to nation wide query scale to identify larger trends in campus crime. Our project requires big data tools to address volume concerns.
 
 ---
 
