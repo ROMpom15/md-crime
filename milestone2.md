@@ -1,8 +1,8 @@
 # System Architecture Document
 ## Big Data Computing - Group Project
 
-**Team Number:** [7]  
-**Project Title:** [Crime on College Campuses]  
+**Team Number:** 7  
+**Project Title:** Crime on College Campuses  
 **Date:** [Submission Date]  
 
 ---
@@ -46,7 +46,7 @@ Presentation Layer → Jupyter
 
 ### 1.2 Architecture Pattern
 
-**Pattern Used:** [Batch Processing]
+**Pattern Used:** Batch Processing
 
 **Justification:**
 [Explain why you chose this architectural pattern. What are its benefits for your use case?]
@@ -63,14 +63,14 @@ We chose this architectural pattern for maximum efficiency and because of our kn
 
 The purpose of the Data Ingestion Layer is to collect and cleanse the data from the Department of Education.
 
-**Technologies:** [Direct File Upload]
+**Technologies:** Direct File Upload
 
 **Implementation Details:**
-- **Data Source:** [Department of Education]
-- **Ingestion Method:** [Batch]
-- **Data Format:** [XLS → CSV]
-- **Frequency:** [Real-time]
-- **Volume:** [Records/second]
+- **Data Source:** Department of Education
+- **Ingestion Method:** Batch
+- **Data Format:** XLS → CSV
+- **Frequency:** Real-time
+- **Volume:** Records/second
 
 **Code Snippet:**
 ```python
@@ -87,10 +87,10 @@ The purpose of the Data Ingestion Layer is to collect and cleanse the data from 
 
 **Purpose:** [What this layer does]
 
-**Technologies:** [HDFS]
+**Technologies:** HDFS
 
 **Data Organization:**
-- **Storage Format:** [CSV]
+- **Storage Format:** CSV
 - **Partitioning Strategy:** [How data is partitioned - by date, by key, etc.]
 - **Replication Factor:** [If applicable]
 - **Estimated Size:** [Current and projected]
@@ -116,7 +116,7 @@ Table: user_events
 
 **Purpose:** [What this layer does]
 
-**Technologies:** [Spark (PySpark)]
+**Technologies:** Spark (PySpark)
 
 **Processing Pipeline:**
 
@@ -157,7 +157,7 @@ from pyspark.sql.functions import *
 
 **Purpose:** [How results are presented]
 
-**Technologies:** [Jupyter]
+**Technologies:** Jupyter
 
 **Visualization Types:**
 - [Viz 1]: [e.g., Time series plot of events]
