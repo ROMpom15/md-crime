@@ -79,7 +79,7 @@ The purpose of the Data Ingestion Layer is to collect and cleanse the data from 
 ```
 
 **Challenges & Solutions:**
-- [Challenge 1]: [How you addressed it]
+- Alter Schemas: Use the given tables from the DoE to create more accurate schemas. 
 
 ---
 
