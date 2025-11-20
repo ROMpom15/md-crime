@@ -161,6 +161,8 @@ from pyspark.sql.functions import *
 
 **Purpose:** [How results are presented]
 
+The purpose of the Visualization/Presentation Layer is to transform and display the data to be easily readable and understandable using graphs, charts, and other visualization methods.
+
 **Technologies:** Jupyter
 
 **Visualization Types:**
