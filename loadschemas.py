@@ -110,8 +110,8 @@ def load_csv(spark, path, schema):
 spark = SparkSession.builder.appName("CampusSafetyLoad").getOrCreate()
 
 # Change these to your actual HDFS/local directories
-base_181920 = "hdfs:///path/to/181920/"
-base_212223 = "hdfs:///path/to/212223/"
+base_181920 = "datasets_csv"
+base_212223 = "datasets_csv"
 
 # ============================================================
 # 181920 DATAFRAMES (FIRST PERIOD GROUP)
@@ -173,9 +173,6 @@ reportedvawa181920_df = load_csv(
     spark, base_181920 + "reportedvawa181920.csv", vawa_schema_181920
 )
 
-# ============================================================
-# 212223 DATAFRAMES (SECOND PERIOD GROUP)
-# ============================================================
 
 # On-campus 212223
 oncampuscrime212223_df = load_csv(
@@ -233,7 +230,3 @@ reportedvawa212223_df = load_csv(
     spark, base_212223 + "reportedvawa212223.csv", vawa_schema_212223
 )
 
-# ============================================================
-# At this point you have DataFrames for all CSVs.
-# You can now union / combine by school as needed.
-# ============================================================
