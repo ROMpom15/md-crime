@@ -180,7 +180,6 @@ The purpose of the Visualization/Presentation Layer is to transform and display 
 | Technology | Purpose | Why Chosen | Alternatives Considered |
 |------------|---------|------------|------------------------|
 | Apache Spark | Data processing | High performance, in-memory computing | Hadoop MapReduce (too slow) |
-| Kafka | Streaming ingestion | High throughput, fault-tolerant | AWS Kinesis (cost), RabbitMQ (scale) |
 | Jupyter | NoSQL storage | Iterative, integrated environment, Matplotlib | Tableau |
 
 ---
