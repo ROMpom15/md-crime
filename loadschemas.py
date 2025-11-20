@@ -1,0 +1,239 @@
+from pyspark.sql import SparkSession
+from pyspark.sql.types import (
+    StructType,
+    StructField,
+    StringType,
+    IntegerType,
+    LongType,
+)
+
+# ============================================================
+# SCHEMAS
+# ============================================================
+
+institution_fields = [
+    StructField("UNITID_P", LongType(), True),
+    StructField("INSTNM", StringType(), True),
+    StructField("OPEID", StringType(), True),
+    StructField("BRANCH", StringType(), True),
+    StructField("Address", StringType(), True),
+    StructField("City", StringType(), True),
+    StructField("State", StringType(), True),
+    StructField("ZIP", StringType(), True),
+    StructField("sector_cd", IntegerType(), True),
+    StructField("Sector_desc", StringType(), True),
+    StructField("men_total", IntegerType(), True),
+    StructField("women_total", IntegerType(), True),
+    StructField("Total", IntegerType(), True),
+]
+
+
+def make_crime_schema(years):
+    offense_codes = [
+        "MURD", "NEG_M", "RAPE", "FONDL", "INCES", "STATR",
+        "ROBBE", "AGG_A", "BURGLA", "VEHIC", "ARSON",
+    ]
+    fields = []
+    for y in years:
+        for code in offense_codes:
+            fields.append(StructField(f"{code}{y}", IntegerType(), True))
+        fields.append(StructField(f"FILTER{y}", IntegerType(), True))
+    return StructType(institution_fields + fields)
+
+
+def make_discipline_schema(years):
+    fields = []
+    for y in years:
+        for code in ["WEAPON", "DRUG", "LIQUOR"]:
+            fields.append(StructField(f"{code}{y}", IntegerType(), True))
+        fields.append(StructField(f"FILTER{y}", IntegerType(), True))
+    return StructType(institution_fields + fields)
+
+
+def make_vawa_schema(years):
+    fields = []
+    for y in years:
+        for code in ["DOMEST", "DATING", "STALK"]:
+            fields.append(StructField(f"{code}{y}", IntegerType(), True))
+        fields.append(StructField(f"FILTER{y}", IntegerType(), True))
+    return StructType(institution_fields + fields)
+
+
+def make_hate_schema(years):
+    offenses = [
+        "MURD", "RAPE", "FOND", "INCE", "STAT", "ROBBE",
+        "AGG_A", "BURGLA", "VEHIC", "ARSON",
+        "SIM_A", "LAR_T", "INTIM", "VANDAL",
+    ]
+    suffixes = ["", "_RAC", "_REL", "_SEX", "_GEN", "_GID", "_DIS", "_ET", "_NAT"]
+
+    fields = []
+    for y in years:
+        for off in offenses:
+            for suf in suffixes:
+                fields.append(StructField(f"{off}{suf}{y}", IntegerType(), True))
+        fields.append(StructField(f"FILTER{y}", IntegerType(), True))
+    return StructType(institution_fields + fields)
+
+
+years_181920 = ["18", "19", "20"]
+years_212223 = ["21", "22", "23"]
+
+# 181920 schemas
+crime_schema_181920 = make_crime_schema(years_181920)
+discipline_schema_181920 = make_discipline_schema(years_181920)
+vawa_schema_181920 = make_vawa_schema(years_181920)
+hate_schema_181920 = make_hate_schema(years_181920)
+
+# 212223 schemas
+crime_schema_212223 = make_crime_schema(years_212223)
+discipline_schema_212223 = make_discipline_schema(years_212223)
+vawa_schema_212223 = make_vawa_schema(years_212223)
+hate_schema_212223 = make_hate_schema(years_212223)
+
+# ============================================================
+# LOAD HELPERS
+# ============================================================
+
+def load_csv(spark, path, schema):
+    return (
+        spark.read
+             .option("header", True)
+             .schema(schema)
+             .csv(path)
+    )
+
+# ============================================================
+# SPARK SESSION
+# ============================================================
+
+spark = SparkSession.builder.appName("CampusSafetyLoad").getOrCreate()
+
+# Change these to your actual HDFS/local directories
+base_181920 = "hdfs:///path/to/181920/"
+base_212223 = "hdfs:///path/to/212223/"
+
+# ============================================================
+# 181920 DATAFRAMES (FIRST PERIOD GROUP)
+# ============================================================
+
+# On-campus 181920
+oncampuscrime181920_df = load_csv(
+    spark, base_181920 + "oncampuscrime181920.csv", crime_schema_181920
+)
+oncampusdiscipline181920_df = load_csv(
+    spark, base_181920 + "oncampusdiscipline181920.csv", discipline_schema_181920
+)
+oncampushate181920_df = load_csv(
+    spark, base_181920 + "oncampushate181920.csv", hate_schema_181920
+)
+oncampusvawa181920_df = load_csv(
+    spark, base_181920 + "oncampusvawa181920.csv", vawa_schema_181920
+)
+
+# Residence hall 181920
+residencehallcrime181920_df = load_csv(
+    spark, base_181920 + "residencehallcrime181920.csv", crime_schema_181920
+)
+residencehalldiscipline181920_df = load_csv(
+    spark, base_181920 + "residencehalldiscipline181920.csv", discipline_schema_181920
+)
+residencehallhate181920_df = load_csv(
+    spark, base_181920 + "residencehallhate181920.csv", hate_schema_181920
+)
+residencehallvawa181920_df = load_csv(
+    spark, base_181920 + "residencehallvawa181920.csv", vawa_schema_181920
+)
+
+# Public property 181920
+publicpropertycrime181920_df = load_csv(
+    spark, base_181920 + "publicpropertycrime181920.csv", crime_schema_181920
+)
+publicpropertydiscipline181920_df = load_csv(
+    spark, base_181920 + "publicpropertydiscipline181920.csv", discipline_schema_181920
+)
+publicpropertyhate181920_df = load_csv(
+    spark, base_181920 + "publicpropertyhate181920.csv", hate_schema_181920
+)
+publicpropertyvawa181920_df = load_csv(
+    spark, base_181920 + "publicpropertyvawa181920.csv", vawa_schema_181920
+)
+
+# Reported 181920
+reportedcrime181920_df = load_csv(
+    spark, base_181920 + "reportedcrime181920.csv", crime_schema_181920
+)
+reporteddiscipline181920_df = load_csv(
+    spark, base_181920 + "reporteddiscipline181920.csv", discipline_schema_181920
+)
+reportedhate181920_df = load_csv(
+    spark, base_181920 + "reportedhate181920.csv", hate_schema_181920
+)
+reportedvawa181920_df = load_csv(
+    spark, base_181920 + "reportedvawa181920.csv", vawa_schema_181920
+)
+
+# ============================================================
+# 212223 DATAFRAMES (SECOND PERIOD GROUP)
+# ============================================================
+
+# On-campus 212223
+oncampuscrime212223_df = load_csv(
+    spark, base_212223 + "oncampuscrime212223.csv", crime_schema_212223
+)
+oncampusdiscipline212223_df = load_csv(
+    spark, base_212223 + "oncampusdiscipline212223.csv", discipline_schema_212223
+)
+oncampushate212223_df = load_csv(
+    spark, base_212223 + "oncampushate212223.csv", hate_schema_212223
+)
+oncampusvawa212223_df = load_csv(
+    spark, base_212223 + "oncampusvawa212223.csv", vawa_schema_212223
+)
+
+# Residence hall 212223
+residencehallcrime212223_df = load_csv(
+    spark, base_212223 + "residencehallcrime212223.csv", crime_schema_212223
+)
+residencehalldiscipline212223_df = load_csv(
+    spark, base_212223 + "residencehalldiscipline212223.csv", discipline_schema_212223
+)
+residencehallhate212223_df = load_csv(
+    spark, base_212223 + "residencehallhate212223.csv", hate_schema_212223
+)
+residencehallvawa212223_df = load_csv(
+    spark, base_212223 + "residencehallvawa212223.csv", vawa_schema_212223
+)
+
+# Public property 212223
+publicpropertycrime212223_df = load_csv(
+    spark, base_212223 + "publicpropertycrime212223.csv", crime_schema_212223
+)
+publicpropertydiscipline212223_df = load_csv(
+    spark, base_212223 + "publicpropertydiscipline212223.csv", discipline_schema_212223
+)
+publicpropertyhate212223_df = load_csv(
+    spark, base_212223 + "publicpropertyhate212223.csv", hate_schema_212223
+)
+publicpropertyvawa212223_df = load_csv(
+    spark, base_212223 + "publicpropertyvawa212223.csv", vawa_schema_212223
+)
+
+# Reported 212223
+reportedcrime212223_df = load_csv(
+    spark, base_212223 + "reportedcrime212223.csv", crime_schema_212223
+)
+reporteddiscipline212223_df = load_csv(
+    spark, base_212223 + "reporteddiscipline212223.csv", discipline_schema_212223
+)
+reportedhate212223_df = load_csv(
+    spark, base_212223 + "reportedhate212223.csv", hate_schema_212223
+)
+reportedvawa212223_df = load_csv(
+    spark, base_212223 + "reportedvawa212223.csv", vawa_schema_212223
+)
+
+# ============================================================
+# At this point you have DataFrames for all CSVs.
+# You can now union / combine by school as needed.
+# ============================================================
