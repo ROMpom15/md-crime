@@ -87,11 +87,13 @@ The purpose of the Data Ingestion Layer is to collect and cleanse the data from 
 
 **Purpose:** [What this layer does]
 
+The Data Storage Layer stores, organizes, and prepares data for use. HDFS specifically stores large files by distributing their contents over multiple clusters.
+
 **Technologies:** HDFS
 
 **Data Organization:**
 - **Storage Format:** CSV
-- **Partitioning Strategy:** [How data is partitioned - by date, by key, etc.]
+- **Partitioning Strategy:** By university
 - **Replication Factor:** [If applicable]
 - **Estimated Size:** [Current and projected]
 
@@ -115,6 +117,8 @@ Table: user_events
 ### 2.3 Data Processing Layer
 
 **Purpose:** [What this layer does]
+
+The purpose of the Data Processing Layer is to transform the data into a clean, usable version that can be used for analysis and visualization.
 
 **Technologies:** Spark (PySpark)
 
