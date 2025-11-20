@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-input_dir = Path("Datasets")
+input_dir = Path("data") / "Datasets"
 
 output_dir = Path("datasets_csv")
 output_dir.mkdir(exist_ok=True)
