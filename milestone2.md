@@ -3,7 +3,7 @@
 
 **Team Number:** 7  
 **Project Title:** Crime on College Campuses  
-**Date:** [Submission Date]  
+**Date:** 24 NOV 2025      
 
 ---
 
@@ -11,7 +11,7 @@
 
 [2-3 paragraphs providing a high-level overview of your system, its purpose, key technical decisions, and current implementation status]
 
-
+Our system is collecting data and metrics regarding crime in the United States in order to determine patterns of crime. Our only technical decision was storing data using HDFS. HDFS was unable to process excel files so we converted the 30 excel files into CSVs. We then processed them using HDFS. All of the files have been converted, they just need to be run. 
 
 ---
 
@@ -51,7 +51,7 @@ Presentation Layer → Jupyter
 **Justification:**
 [Explain why you chose this architectural pattern. What are its benefits for your use case?]
 
-We chose this architectural pattern for maximum efficiency and because of our knowledge working with CSVs, Spark, HDFS, and Jupyter. 
+We chose this architectural pattern for maximum efficiency and because of our knowledge working with CSVs, Spark, HDFS, and Jupyter. In our case, the benefits include cheap storage and scalability. 
 
 ---
 
