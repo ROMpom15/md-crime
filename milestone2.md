@@ -98,15 +98,41 @@ The Data Storage Layer stores, organizes, and prepares data for use. HDFS specif
 - **Estimated Size:** [Current and projected]
 
 **Schema Design:**
-```
-[Show your data schema/table structures]
-Example:
-Table: user_events
-- user_id: String
-- event_type: String
-- timestamp: Timestamp
-- properties: Map<String, String>
-```
+vawa = reportedvawa181920_df \
+    .unionByName(reportedvawa212223_df) \
+    .unionByName(publicpropertyvawa181920_df) \
+    .unionByName(publicpropertyvawa212223_df) \
+    .unionByName(residencehallvawa181920_df) \
+    .unionByName(residencehallvawa212223_df) \
+    .unionByName(oncampusvawa181920_df) \
+    .unionByName(oncampusvawa212223_df)
+
+crime = reportedcrime181920_df \
+    .unionByName(reportedcrime212223_df) \
+    .unionByName(publicpropertycrime181920_df) \
+    .unionByName(publicpropertycrime212223_df) \
+    .unionByName(residencehallcrime181920_df) \
+    .unionByName(residencehallcrime212223_df) \
+    .unionByName(oncampuscrime181920_df) \
+    .unionByName(oncampuscrime212223_df)
+
+discipline = reporteddiscipline181920_df \
+    .unionByName(reporteddiscipline212223_df) \
+    .unionByName(publicpropertydiscipline181920_df) \
+    .unionByName(publicpropertydiscipline212223_df) \
+    .unionByName(residencehalldiscipline181920_df) \
+    .unionByName(residencehalldiscipline212223_df) \
+    .unionByName(oncampusdiscipline181920_df) \
+    .unionByName(oncampusdiscipline212223_df)
+
+hate = reportedhate181920_df \
+    .unionByName(reportedhate212223_df) \
+    .unionByName(publicpropertyhate181920_df) \
+    .unionByName(publicpropertyhate212223_df) \
+    .unionByName(residencehallhate181920_df) \
+    .unionByName(residencehallhate212223_df) \
+    .unionByName(oncampushate181920_df) \
+    .unionByName(oncampushate212223_df)
 
 **Optimization Techniques:**
 - [Technique 1]: [Description]
