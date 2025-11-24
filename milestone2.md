@@ -240,36 +240,22 @@ md-crime/
 
 ## 6. Demonstration Plan
 
-### 6.1 Live Demo Flow (5 minutes)
-1. **Show input data** (30 seconds)
-2. **Run processing pipeline** (2 minutes)
-3. **Display results** (1.5 minutes)
-4. **Highlight scalability** (1 minute)
+### 6.1 Live Demo Flow 
+
+Our group is going to demonstrate what it looks like to load our data into HDFS then run the code reading from HDFS. From there, we will generate a graphic. 
 
 ### 6.2 Backup Plan
 [What if live demo fails? Screenshots, video recording, etc.]
 
+If the live demo fails, we will produce a video recording of a successful attempt.
+
 ---
 
-## 6. Remaining Work (Milestone 3)
+### 6.3 Timeline for Final Week (04DEC)
 
-### 6.1 Critical Path Items
-1. **[Task 1]:** [Description] - Assigned to: [Name]
-2. **[Task 2]:** [Description] - Assigned to: [Name]
-3. **[Task 3]:** [Description] - Assigned to: [Name]
+**Day 1-2:** Have everything loaded in by 25NOV. By 01DEC, join the CSVs into one large parquet. 
 
-### 6.2 Risk Assessment
-
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| [Risk 1] | High/Med/Low | High/Med/Low | [Plan] |
-| [Risk 2] | High/Med/Low | High/Med/Low | [Plan] |
-
-### 6.3 Timeline for Final Week (01DEC)
-
-**Day 1-2:** [Tasks]
-
-**Day 3-4:** [Tasks]
+**Day 3-4:** By 02DEC, we will complete all visualizations. By 03DEC, add finishing touches and complete Jupyter notebook.
 
 ---
 
