@@ -94,8 +94,7 @@ The Data Storage Layer stores, organizes, and prepares data for use. HDFS specif
 **Data Organization:**
 - **Storage Format:** CSV
 - **Partitioning Strategy:** By university
-- **Replication Factor:** [If applicable]
-- **Estimated Size:** [Current and projected]
+- **Estimated Size:** 180 MB
 
 **Schema Design:**
 ```
@@ -125,9 +124,7 @@ The purpose of the Data Processing Layer is to transform the data into a clean, 
 **Processing Pipeline:**
 
 ```
-Stage 1: Data Cleaning
-    ↓
-Stage 2: Transformation
+Stage 2: Transformation (Excel --> CSV, CSV --> Parquet)
     ↓
 Stage 3: Aggregation/Analysis
     ↓
@@ -135,11 +132,13 @@ Stage 4: Results Storage
 ```
 
 **Key Transformations:**
-1. **[Transformation 1]:** [Description]
-   - Input: [Format]
-   - Output: [Format]
+1. **[Transformation 1]:** 30 Excel files to 30 CSV files
+   - Input: 30 Excel
+   - Output: 30 CSV
 
-2. **[Transformation 2]:** [Description]
+2. **[Transformation 2]:** 30 CSV to 1 Parquet
+   - Input: 30 CSV
+   - Output: 1 Parquet
 
 **Code Snippet:**
 ```python
