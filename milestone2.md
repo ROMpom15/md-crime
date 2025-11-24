@@ -215,16 +215,15 @@ The purpose of the Visualization/Presentation Layer is to transform and display 
 - [x] Data ingestion pipeline
 - [x] Basic Spark processing
 - [x] Storage layer setup
-- [ ] Machine learning model (in progress)
 - [ ] Visualization dashboard (not started)
 
 ### 5.2 Code Repository
 
-**Repository URL:** (if applicable)[GitHub/GitLab link]
+**Repository URL:** (https://github.com/ROMpom15/md-crime)
 
 **Directory Structure:**
 ```
-project/
+md-crime/
 ├── src/
 │   ├── ingestion/
 │   ├── processing/
@@ -234,13 +233,9 @@ project/
 ├── notebooks/
 ├── data/
 └── tests/
+
+
 ```
-
-**Current Code Statistics:**
-- Lines of Code: [Approximate]
-- Number of Scripts: [Count]
-- Test Coverage: [If applicable]
-
 ---
 
 ## 6. Demonstration Plan
