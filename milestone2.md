@@ -3,7 +3,7 @@
 
 **Team Number:** 7  
 **Project Title:** Crime on College Campuses  
-**Date:** [Submission Date]  
+**Date:** 24 NOV 2025      
 
 ---
 
@@ -11,7 +11,7 @@
 
 [2-3 paragraphs providing a high-level overview of your system, its purpose, key technical decisions, and current implementation status]
 
-
+Our system is collecting data and metrics regarding crime in the United States in order to determine patterns of crime. Our only technical decision was storing data using HDFS. HDFS was unable to process excel files so we converted the 30 excel files into CSVs. We then processed them using HDFS. All of the files have been converted, they just need to be run. 
 
 ---
 
@@ -51,7 +51,7 @@ Presentation Layer → Jupyter
 **Justification:**
 [Explain why you chose this architectural pattern. What are its benefits for your use case?]
 
-We chose this architectural pattern for maximum efficiency and because of our knowledge working with CSVs, Spark, HDFS, and Jupyter. 
+We chose this architectural pattern for maximum efficiency and because of our knowledge working with CSVs, Spark, HDFS, and Jupyter. In our case, the benefits include cheap storage and scalability. 
 
 ---
 
@@ -94,8 +94,7 @@ The Data Storage Layer stores, organizes, and prepares data for use. HDFS specif
 **Data Organization:**
 - **Storage Format:** CSV
 - **Partitioning Strategy:** By university
-- **Replication Factor:** [If applicable]
-- **Estimated Size:** [Current and projected]
+- **Estimated Size:** 180 MB
 
 **Schema Design:**
 vawa = reportedvawa181920_df \
@@ -151,9 +150,7 @@ The purpose of the Data Processing Layer is to transform the data into a clean, 
 **Processing Pipeline:**
 
 ```
-Stage 1: Data Cleaning
-    ↓
-Stage 2: Transformation
+Stage 2: Transformation (Excel --> CSV, CSV --> Parquet)
     ↓
 Stage 3: Aggregation/Analysis
     ↓
@@ -161,11 +158,13 @@ Stage 4: Results Storage
 ```
 
 **Key Transformations:**
-1. **[Transformation 1]:** [Description]
-   - Input: [Format]
-   - Output: [Format]
+1. **[Transformation 1]:** 30 Excel files to 30 CSV files
+   - Input: 30 Excel
+   - Output: 30 CSV
 
-2. **[Transformation 2]:** [Description]
+2. **[Transformation 2]:** 30 CSV to 1 Parquet
+   - Input: 30 CSV
+   - Output: 1 Parquet
 
 **Code Snippet:**
 ```python
