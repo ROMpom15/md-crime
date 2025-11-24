@@ -174,12 +174,6 @@ from pyspark.sql.functions import *
 
 # Example showing your key transformation
 ```
-
-**Parallelization Strategy:**
-- **Number of Partitions:** [e.g., 100 partitions]
-- **Partition Key:** [What you partition by]
-- **Shuffle Operations:** [Where they occur and why]
-
 ---
 
 ### 2.5 Visualization/Presentation Layer
@@ -191,12 +185,9 @@ The purpose of the Visualization/Presentation Layer is to transform and display 
 **Technologies:** Jupyter
 
 **Visualization Types:**
-- [Viz 1]: [e.g., Time series plot of events]
-- [Viz 2]: [e.g., Heatmap of user activity]
-- [Viz 3]: [e.g., Dashboard with key metrics]
-
-**Interactive Elements:**
-- [Element 1]: [Description]
+- [Viz 1]: Heat map of the United States (more opaque at crime hotspots)
+- [Viz 2]: Bar chart displaying highest top 20 crime rates by institution
+- [Viz 3]: Bar chart displaying lowest top 20 crime rates by institution
 
 ---
 
@@ -212,25 +203,9 @@ The purpose of the Visualization/Presentation Layer is to transform and display 
 ## 4. Scalability Analysis
 
 ### 4.1 Current Scale
-- **Data Volume:** [Current size]
-- **Processing Time:** [Time to process full dataset]
-- **Cluster Configuration:** [Nodes, cores, memory]
-
-### 4.2 Scalability Testing Plan
-
-**Experiment 1: Vertical Scaling**
-- Vary: [e.g., Executor memory: 2GB, 4GB, 8GB]
-- Measure: [e.g., Processing time, throughput]
-- Expected: [Your hypothesis]
-
-**Experiment 2: Horizontal Scaling**
-- Vary: [e.g., Number of workers: 2, 4, 8]
-- Measure: [e.g., Speedup, efficiency]
-- Expected: [Your hypothesis]
-
-### 4.3 Projected Scale
-- **Can handle:** [e.g., 100GB data, 10M records/hour]
-- **Limitations:** [What would break the system?]
+- **Data Volume:** 180 MB
+- **Processing Time:** ~ 1 minute
+- **Cluster Configuration:** Memory
 
 ---
 
