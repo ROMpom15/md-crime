@@ -94,7 +94,7 @@ The Data Storage Layer stores, organizes, and prepares data for use. HDFS specif
 **Data Organization:**
 - **Storage Format:** CSV
 - **Partitioning Strategy:** By university
-- **Estimated Size:** 180 MB
+- **Estimated Size:** 135.1 MB
 
 **Schema Design:**
 vawa = reportedvawa181920_df \
@@ -203,7 +203,7 @@ The purpose of the Visualization/Presentation Layer is to transform and display 
 ## 4. Scalability Analysis
 
 ### 4.1 Current Scale
-- **Data Volume:** 180 MB
+- **Data Volume:** 135.1 MB
 - **Processing Time:** ~ 1 minute
 - **Cluster Configuration:** Memory
 
