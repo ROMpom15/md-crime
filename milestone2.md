@@ -279,8 +279,8 @@ If the live demo fails, we will produce a video recording of a successful attemp
 - **Key learning:** [e.g., Importance of partitioning strategy]
 
 ### 7.2 Team Process
-- **Effective practices:** [e.g., Daily standups kept everyone aligned]
-- **Improvements needed:** [e.g., Earlier integration testing]
+- **Effective practices:** Constant communication with each other to ensure we were all getting our pieces and parts complete. 
+- **Improvements needed:** More time working as a group in-person
 
 ---
 
