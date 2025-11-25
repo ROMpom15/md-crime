@@ -223,16 +223,28 @@ The purpose of the Visualization/Presentation Layer is to transform and display 
 
 **Directory Structure:**
 ```
-md-crime/
-├── src/
-│   ├── ingestion/
-│   ├── processing/
-│   ├── ml_models/
-│   └── utils/
-├── configs/
-├── notebooks/
-├── data/
-└── tests/
+md-crime
+    └───md-crime-main
+        ├───archive
+        │   └───docker
+        ├───data
+        │   ├───Datasets
+        │   ├───datasets_csv
+        │   └───raw
+        ├───datasets_csv
+        ├───hadoop-3.3.6
+        │   ├───include
+        │   ├───lib
+        │   │   └───native
+        │   ├───licenses-binary
+        │   └───sbin
+        │       └───FederationStateStore
+        │           ├───MySQL
+        │           └───SQLServer
+        ├───reports
+        └───src
+            ├───hdfs_env
+            └───preproc
 
 
 ```
