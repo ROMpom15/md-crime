@@ -1,0 +1,145 @@
+===================================================================
+  NO-SUDO HADOOP CLUSTER SETUP GUIDE (HDFS + YARN)
+  Prerequisites: Mamba or Conda installed.
+===================================================================
+
+STEP 1: JAVA ENVIRONMENT (Using Mamba)
+-------------------------------------------------------------------
+Hadoop needs Java 8 or 11. We use Mamba to keep this isolated.
+
+1. Create the environment:
+   $ mamba create -n hdfs_env openjdk=11 -c conda-forge -y
+
+2. Activate it:
+   $ mamba activate hdfs_env
+
+
+STEP 2: INSTALL HADOOP (Manual Download)
+-------------------------------------------------------------------
+We install Hadoop manually to the home folder to avoid permission issues.
+
+1. Download and Unzip (ensure you are in your home folder):
+   $ cd ~
+   $ wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
+   $ tar -xzf hadoop-3.3.6.tar.gz
+   $ mv hadoop-3.3.6 hadoop
+
+
+STEP 3: ENVIRONMENT VARIABLES
+-------------------------------------------------------------------
+Add the following lines to the bottom of your ~/.bashrc file:
+
+export HADOOP_HOME=~/hadoop
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export HADOOP_YARN_HOME=$HADOOP_HOME
+export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+# Dynamically find the Mamba Java path
+export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))
+
+*After saving, run: source ~/.bashrc*
+
+
+STEP 4: CONFIGURATION FILES (Located in ~/hadoop/etc/hadoop/)
+-------------------------------------------------------------------
+
+A. Edit 'hadoop-env.sh'
+   Find the line: export JAVA_HOME=...
+   Replace it with the explicit path to your mamba java (run 'echo $JAVA_HOME' to see it).
+   Example: export JAVA_HOME=/home/YOUR_USER/miniforge3/envs/hdfs_env/lib/jvm/...
+
+B. Edit 'core-site.xml'
+   <configuration>
+       <property>
+           <name>fs.defaultFS</name>
+           <value>hdfs://localhost:9000</value>
+       </property>
+   </configuration>
+
+C. Edit 'hdfs-site.xml' (Using ${user.home} ensures it works for anyone)
+   <configuration>
+       <property>
+           <name>dfs.replication</name>
+           <value>1</value>
+       </property>
+       <property>
+           <name>dfs.namenode.name.dir</name>
+           <value>file://${user.home}/hdfs_data/namenode</value>
+       </property>
+       <property>
+           <name>dfs.datanode.data.dir</name>
+           <value>file://${user.home}/hdfs_data/datanode</value>
+       </property>
+   </configuration>
+
+D. Edit 'mapred-site.xml'
+   <configuration>
+       <property>
+           <name>mapreduce.framework.name</name>
+           <value>yarn</value>
+       </property>
+   </configuration>
+
+E. Edit 'yarn-site.xml'
+   <configuration>
+       <property>
+           <name>yarn.nodemanager.aux-services</name>
+           <value>mapreduce_shuffle</value>
+       </property>
+       <property>
+           <name>yarn.nodemanager.env-whitelist</name>
+           <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME</value>
+       </property>
+   </configuration>
+
+
+STEP 5: SSH SETUP
+-------------------------------------------------------------------
+1. Generate keys (if you haven't already):
+   $ ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+   $ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+   $ chmod 0600 ~/.ssh/authorized_keys
+
+2. CRITICAL: Authenticate localhost manually once:
+   $ ssh localhost
+   (Type 'yes' if asked. If you get a warning about "Offending key", run the command suggested in the error to clean known_hosts).
+   $ exit
+
+
+STEP 6: INITIALIZE AND START
+-------------------------------------------------------------------
+1. Create data directories:
+   $ rm -rf ~/hdfs_data   (WARNING: Deletes existing HDFS data)
+   $ mkdir -p ~/hdfs_data/namenode
+   $ mkdir -p ~/hdfs_data/datanode
+
+2. Format the NameNode:
+   $ hdfs namenode -format
+
+3. Start HDFS and YARN:
+   $ start-dfs.sh
+   $ start-yarn.sh
+
+4. Verify:
+   $ jps
+   
+   You should see 5 processes:
+   - NameNode
+   - DataNode
+   - SecondaryNameNode
+   - ResourceManager
+   - NodeManager
+
+
+TROUBLESHOOTING CHEATSHEET
+-------------------------------------------------------------------
+1. "SecondaryNameNode is running as process X":
+   Run: kill -9 X
+
+2. "NameNode not formatted" or "Inconsistent State":
+   Stop everything ($ stop-all.sh), delete ~/hdfs_data, and run the Format command again.
+
+3. "Remote Host Identification Changed":
+   Run: ssh-keygen -f ~/.ssh/known_hosts -R localhost

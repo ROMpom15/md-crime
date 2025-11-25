@@ -1,13 +1,25 @@
 .:
-README.md
+archive
 data
 dir.txt
-milestone1.md
+milestone2.md
+README.md
 reports
 src
 
+./archive:
+docker
+
+./archive/docker:
+config
+docker-compose.yaml
+docker_workflow.md
+lab04.tar.gz
+mapred-site.xml
+
 ./data:
 Datasets
+datasets_csv
 raw
 
 ./data/Datasets:
@@ -42,21 +54,53 @@ Residencehallhate212223.xlsx
 Residencehallvawa181920.xls
 Residencehallvawa212223.xls
 
+./data/datasets_csv:
+Oncampuscrime181920.csv
+Oncampuscrime212223.csv
+Oncampushate181920.csv
+Oncampushate212223.csv
+Oncampusvawa181920.csv
+Oncampusvawa212223.csv
+Publicpropertycrime181920.csv
+Publicpropertycrime212223.csv
+Publicpropertydiscipline181920.csv
+Publicpropertydiscipline212223.csv
+Publicpropertyhate181920.csv
+Publicpropertyhate212223.csv
+Publicpropertyvawa181920.csv
+Publicpropertyvawa212223.csv
+Reportedcrime181920.csv
+Reportedcrime212223.csv
+Reporteddiscipline181920.csv
+Reporteddiscipline212223.csv
+Reportedhate181920.csv
+Reportedhate212223.csv
+Reportedvawa181920.csv
+Reportedvawa212223.csv
+Residencehallcrime181920.csv
+Residencehallcrime212223.csv
+Residencehalldiscipline181920.csv
+Residencehalldiscipline212223.csv
+Residencehallhate181920.csv
+Residencehallhate212223.csv
+Residencehallvawa181920.csv
+Residencehallvawa212223.csv
+
 ./data/raw:
 Datasets-20251117T161104Z-1-001.zip
 
 ./reports:
+milestone1.md
+milestone2.md
 
 ./src:
-docker
+hdfs_env
 preproc
 
-./src/docker:
-config
-docker-compose.yaml
-docker_workflow.md
-lab04.tar.gz
-mapred-site.xml
+./src/hdfs_env:
+hdfs_env.sh
+hdfs.txt
 
 ./src/preproc:
 dataconversion.py
+loadschemas.py

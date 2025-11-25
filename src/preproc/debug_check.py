@@ -1,0 +1,51 @@
+import os
+from pyspark.sql import SparkSession
+
+# 1. Setup Spark
+spark = SparkSession.builder \
+    .appName("DebugCheck") \
+    .config("spark.hadoop.fs.defaultFS", "hdfs://localhost:9000") \
+    .getOrCreate()
+
+# 2. Calculate Paths (Same logic as main script)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# Navigate: src/preproc/ -> src/ -> md-crime/ -> data/datasets_csv/
+local_csv_path = os.path.abspath(os.path.join(script_dir, "../../data/datasets_csv"))
+
+print("\n" + "="*50)
+print("DIAGNOSTIC REPORT")
+print("="*50)
+
+# CHECK 1: Do the input files exist on the local disk?
+print(f"Checking Input Directory: {local_csv_path}")
+if os.path.exists(local_csv_path):
+    print("✅ [PASS] Directory exists.")
+    files = os.listdir(local_csv_path)
+    print(f"ℹ️  Found {len(files)} files. First 5: {files[:5]}")
+    if "Oncampuscrime181920.csv" not in files:
+         print("❌ [FAIL] Could not find 'Oncampuscrime181920.csv'. Check capitalization!")
+else:
+    print("❌ [FAIL] Directory does not exist! Check your folder structure.")
+
+# CHECK 2: Can Spark actually read a file?
+test_file = f"file://{local_csv_path}/Oncampuscrime181920.csv"
+print(f"\nAttempting to read: {test_file}")
+try:
+    df = spark.read.option("header", True).csv(test_file)
+    count = df.count()
+    print(f"✅ [PASS] Spark read the file. Row count: {count}")
+except Exception as e:
+    print(f"❌ [FAIL] Spark could not read the file. Error: {e}")
+
+# CHECK 3: Can Spark write to HDFS?
+print("\nAttempting to write test file to HDFS...")
+try:
+    # Create a tiny dataframe
+    test_df = spark.createDataFrame([("test", 1)], ["col1", "col2"])
+    test_df.write.mode("overwrite").parquet("hdfs://localhost:9000/debug_test.parquet")
+    print("✅ [PASS] Successfully wrote to hdfs://localhost:9000/debug_test.parquet")
+    print("Run 'hdfs dfs -ls /' to confirm you see 'debug_test.parquet'")
+except Exception as e:
+    print(f"❌ [FAIL] Could not write to HDFS. Error: {e}")
+
+print("="*50 + "\n")
