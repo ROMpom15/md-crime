@@ -23,8 +23,61 @@ Our final analysis will be conducted using Jupyter.
 
 ### 1.1 Architecture Diagram
 
+```mermaid
+flowchart TD
+    %% Define Styles
+    classDef storage fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef process fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef external fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+
+    %% 1. Data Source
+    subgraph Source [1. Data Source]
+        DoE[("US Dept. of Education")]:::external
+    end
+
+    %% 2. Local Staging
+    subgraph Local [2. Local Staging Layer]
+        direction TB
+        RawFiles[/"Raw Files (.xls / .xlsx)"/]:::storage
+        Pandas(Python Script: Pandas):::process
+        CSVFiles[/"Staged Files (.csv)"/]:::storage
+    end
+
+    %% 3. Processing
+    subgraph Spark [3. Processing Layer]
+        direction TB
+        SparkSession{{PySpark Session}}:::process
+        Schema[Schema Application]:::process
+        Union[unionByName Logic]:::process
+    end
+
+    %% 4. Storage
+    subgraph HDFS [4. Storage Layer]
+        HDFS_Root[("HDFS: /data/merged")]:::storage
+        ParquetFiles[/"Parquet Files"/]:::storage
+    end
+
+    %% 5. Analytics
+    subgraph Analytics [5. Presentation Layer]
+        Jupyter(Jupyter Notebooks):::process
+        Viz[Visualizations & Insights]:::external
+    end
+
+    %% Relationships / Data Flow
+    DoE -->|Download| RawFiles
+    RawFiles -->|Read| Pandas
+    Pandas -->|Convert| CSVFiles
+    
+    CSVFiles -->|Read file:// protocol| SparkSession
+    SparkSession --> Schema
+    Schema --> Union
+    
+    Union -->|Write hdfs:// protocol| HDFS_Root
+    HDFS_Root --- ParquetFiles
+    
+    ParquetFiles -->|Read| Jupyter
+    Jupyter -->|Generate| Viz
 ```
-[Insert your detailed architecture diagram here]
 Include:
 - Data sources
 - Ingestion layer
@@ -44,7 +97,7 @@ Storage Layer → HDFS
 
 Presentation Layer → Jupyter
 
-```
+
 
 **Diagram Tools:** Use draw.io, Lucidchart, or similar. Export as PNG/PDF.
 
@@ -264,19 +317,13 @@ If the live demo fails, we will produce a video recording of a successful attemp
 ## 7. Lessons Learned So Far
 
 ### 7.1 Technical Insights
-- **What worked well:** 
-- Changing data types was simple. The benefits for the small amount of code was highly worth it.
-- **What was challenging:** 
-- HDFS was extremely difficult to set up. The logistical challenges that accompany a school domain are not few, and the intricacies of Java, bashrc, and xml files took a bit of trial and error before coming together.
-- **Key learning:** 
-- Ecosystems are complex. Different programs work well together only when understood, massaged into place, and implemented cohesively.
+- **What worked well:** [e.g., Using Parquet significantly reduced storage]
+- **What was challenging:** [e.g., Debugging distributed shuffle operations]
+- **Key learning:** [e.g., Importance of partitioning strategy]
 
 ### 7.2 Team Process
-- **Effective practices:** 
-- We are still learning effective processing techniques. 
-- **Improvements needed:** 
-- Greater communication, understanding of each others work, and mutual vision for a final product.
-
+- **Effective practices:** [e.g., Daily standups kept everyone aligned]
+- **Improvements needed:** [e.g., Earlier integration testing]
 
 ---
 
