@@ -274,9 +274,9 @@ If the live demo fails, we will produce a video recording of a successful attemp
 ## 7. Lessons Learned So Far
 
 ### 7.1 Technical Insights
-- **What worked well:** [e.g., Using Parquet significantly reduced storage]
-- **What was challenging:** [e.g., Debugging distributed shuffle operations]
-- **Key learning:** [e.g., Importance of partitioning strategy]
+- **What worked well:** Converting files to CSV from Excel (made it easier to process into HDFS)
+- **What was challenging:** The amount of time it took our HDFS system to be set up 
+- **Key learning:** Importance of managing time to allow our systems to process before running anything else
 
 ### 7.2 Team Process
 - **Effective practices:** Constant communication with each other to ensure we were all getting our pieces and parts complete. 
