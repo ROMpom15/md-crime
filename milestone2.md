@@ -9,9 +9,13 @@
 
 ## Executive Summary
 
-[2-3 paragraphs providing a high-level overview of your system, its purpose, key technical decisions, and current implementation status]
+Our system is built to collect, analyze, and study criminal data metrics collected in United States university environments in order to determine patterns of crime. Data was proved by the Department of Education in .xls format.
 
-Our system is collecting data and metrics regarding crime in the United States in order to determine patterns of crime. Our only technical decision was storing data using HDFS. HDFS was unable to process excel files so we converted the 30 excel files into CSVs. We then processed them using HDFS. All of the files have been converted, they just need to be run. 
+One of our primary technical challenges was storing data using HDFS. HDFS proved quite tricky to install and set up. Furthermore, deciding how to store provided files (in their native xls format, csv, or parquet styles) proved to be another challenge. 
+
+We elected to simulate a fully fledged HDFS on a local host, process excel files into CSVs using Pandas, and then store them on HDFS. All of the files were converted succesfully.
+
+Our final analysis will be conducted using Jupyter.
 
 ---
 
@@ -49,9 +53,10 @@ Presentation Layer → Jupyter
 **Pattern Used:** Batch Processing
 
 **Justification:**
-[Explain why you chose this architectural pattern. What are its benefits for your use case?]
 
-We chose this architectural pattern for maximum efficiency and because of our knowledge working with CSVs, Spark, HDFS, and Jupyter. In our case, the benefits include cheap storage and scalability. 
+We chose a batch processing architectural pattern to achieve maximum efficiency. Our knowledge with relations, Spark, HDFS, and Jupyter mesh well with a batch architecture, and in our case, the benefits include cheap storage and scalability. 
+
+The provided DoE data isalso historical, static, and batch produced. Streaming our data is not feasible or supported by the DoE.
 
 ---
 
@@ -59,11 +64,11 @@ We chose this architectural pattern for maximum efficiency and because of our kn
 
 ### 2.1 Data Ingestion Layer
 
-**Purpose:** [What this layer does]
+**Purpose:** 
 
-The purpose of the Data Ingestion Layer is to collect and cleanse the data from the Department of Education.
+The purpose of the Data Ingestion Layer is to collect and cleanse the data from the Department of Education, before preparing them for distributed processing.
 
-**Technologies:** Direct File Upload
+**Technologies:** Direct File Upload, Pandas
 
 **Implementation Details:**
 - **Data Source:** Department of Education
@@ -74,74 +79,65 @@ The purpose of the Data Ingestion Layer is to collect and cleanse the data from 
 
 **Code Snippet:**
 ```python
-# Example of your ingestion code
-# Show key logic, not everything
+for excel_path in input_dir.glob("*.xls*"):
+    print(f"Converting {excel_path.name}...")
+
+    df = pd.read_excel(excel_path)
+
+    csv_name = excel_path.stem + ".csv"
+    csv_path = output_dir / csv_name
+    
+    df.to_csv(csv_path, index=False)
 ```
 
 **Challenges & Solutions:**
-- Alter Schemas: Use the given tables from the DoE to create more accurate schemas. 
+Altering the xls format to csv was a simple challenge. The number of xls files dwarfed this problem however, working with each file individually became tedious. Further optimization techniques would be required to scale this ecosystem.
 
 ---
 
 ### 2.2 Data Storage Layer
 
-**Purpose:** [What this layer does]
+**Purpose:** 
 
-The Data Storage Layer stores, organizes, and prepares data for use. HDFS specifically stores large files by distributing their contents over multiple clusters.
+The Data Storage Layer stores data for use. HDFS specifically stores large files by distributing their contents over multiple nodes in our cluster. Given our constraints, we opted for an HDFS local host.
 
 **Technologies:** HDFS
 
 **Data Organization:**
-- **Storage Format:** CSV
-- **Partitioning Strategy:** By university
+- **Storage Format:** Parquet
+- **Partitioning Strategy:** By Crime type
 - **Estimated Size:** 135.1 MB
 
 **Schema Design:**
-vawa = reportedvawa181920_df \
-    .unionByName(reportedvawa212223_df) \
-    .unionByName(publicpropertyvawa181920_df) \
-    .unionByName(publicpropertyvawa212223_df) \
-    .unionByName(residencehallvawa181920_df) \
-    .unionByName(residencehallvawa212223_df) \
-    .unionByName(oncampusvawa181920_df) \
-    .unionByName(oncampusvawa212223_df)
+We have a number of different schemas for different kinds of crime. All schema's share the following fields:
 
-crime = reportedcrime181920_df \
-    .unionByName(reportedcrime212223_df) \
-    .unionByName(publicpropertycrime181920_df) \
-    .unionByName(publicpropertycrime212223_df) \
-    .unionByName(residencehallcrime181920_df) \
-    .unionByName(residencehallcrime212223_df) \
-    .unionByName(oncampuscrime181920_df) \
-    .unionByName(oncampuscrime212223_df)
+institution_fields = [
+    StructField("UNITID_P", LongType(), True),
+    StructField("INSTNM", StringType(), True),
+    StructField("OPEID", StringType(), True),
+    StructField("BRANCH", StringType(), True),
+    StructField("Address", StringType(), True),
+    StructField("City", StringType(), True),
+    StructField("State", StringType(), True),
+    StructField("ZIP", StringType(), True),
+    StructField("sector_cd", IntegerType(), True),
+    StructField("Sector_desc", StringType(), True),
+    StructField("men_total", IntegerType(), True),
+    StructField("women_total", IntegerType(), True),
+    StructField("Total", IntegerType(), True),
+]
 
-discipline = reporteddiscipline181920_df \
-    .unionByName(reporteddiscipline212223_df) \
-    .unionByName(publicpropertydiscipline181920_df) \
-    .unionByName(publicpropertydiscipline212223_df) \
-    .unionByName(residencehalldiscipline181920_df) \
-    .unionByName(residencehalldiscipline212223_df) \
-    .unionByName(oncampusdiscipline181920_df) \
-    .unionByName(oncampusdiscipline212223_df)
-
-hate = reportedhate181920_df \
-    .unionByName(reportedhate212223_df) \
-    .unionByName(publicpropertyhate181920_df) \
-    .unionByName(publicpropertyhate212223_df) \
-    .unionByName(residencehallhate181920_df) \
-    .unionByName(residencehallhate212223_df) \
-    .unionByName(oncampushate181920_df) \
-    .unionByName(oncampushate212223_df)
+while each schema type has specific types of crime field data. For example, our Violence Against Women Act schema details (in text fields) specific kinds of violent perpetrations, while our crime schema details broader categories of criminal activity.
 
 **Optimization Techniques:**
-- [Technique 1]: [Description]
-- [Technique 2]: [Description]
+- File Type: We chose to store our data in a parquet data format. This columnized storage type allow PySpark to minimize useless computations.
+- Schema on Read: We saved our data with as few edits as possible. We wish to retain as much 'schema on read' benefit as possible and utilize HDFS and parquet file type as much as possible.
 
 ---
 
 ### 2.3 Data Processing Layer
 
-**Purpose:** [What this layer does]
+**Purpose:** 
 
 The purpose of the Data Processing Layer is to transform the data into a clean, usable version that can be used for analysis and visualization.
 
@@ -162,23 +158,27 @@ Stage 4: Results Storage
    - Input: 30 Excel
    - Output: 30 CSV
 
-2. **[Transformation 2]:** 30 CSV to 1 Parquet
+2. **[Transformation 2]:** 30 CSV to 4 Parquet
    - Input: 30 CSV
-   - Output: 1 Parquet
+   - Output: 4 Parquet
 
 **Code Snippet:**
-```python
-# Core processing logic
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import *
 
-# Example showing your key transformation
+```python
+# Merging dataframes with different column sets (Years)
+vawa = reportedvawa181920_df \
+    .unionByName(reportedvawa212223_df, allowMissingColumns=True) \
+    .unionByName(oncampusvawa181920_df, allowMissingColumns=True) \
+    # ... unions continue ...
+
+# Writing to HDFS
+vawa.write.mode("overwrite").parquet("hdfs://localhost:9000/data/merged/vawa.parquet")
+
 ```
----
 
 ### 2.5 Visualization/Presentation Layer
 
-**Purpose:** [How results are presented]
+**Purpose:** 
 
 The purpose of the Visualization/Presentation Layer is to transform and display the data to be easily readable and understandable using graphs, charts, and other visualization methods.
 
@@ -207,6 +207,9 @@ The purpose of the Visualization/Presentation Layer is to transform and display 
 - **Processing Time:** ~ 1 minute
 - **Cluster Configuration:** Memory
 
+We implemented a test python file to check read, write, and storage capabilities on HDFS. We feel confident that if given more computing resources, scaling that aspect of our process wouldn't be difficult.
+
+The greatest scaling challenge lies in batch processing a ridiculously large amount of xls files. If this were able to be done at scale, the rest of our system would scale handely.
 ---
 
 ## 5. Implementation Status
@@ -223,28 +226,16 @@ The purpose of the Visualization/Presentation Layer is to transform and display 
 
 **Directory Structure:**
 ```
-md-crime
-    └───md-crime-main
-        ├───archive
-        │   └───docker
-        ├───data
-        │   ├───Datasets
-        │   ├───datasets_csv
-        │   └───raw
-        ├───datasets_csv
-        ├───hadoop-3.3.6
-        │   ├───include
-        │   ├───lib
-        │   │   └───native
-        │   ├───licenses-binary
-        │   └───sbin
-        │       └───FederationStateStore
-        │           ├───MySQL
-        │           └───SQLServer
-        ├───reports
-        └───src
-            ├───hdfs_env
-            └───preproc
+md-crime/
+├── archive/           # Old files
+├── src/
+│   ├── hdfs_env/      # Environment scripts
+│   ├── preproc/       # ETL scripts (loadschemas.py, dataconversion.py)
+├── data/
+│   ├── datasets_csv/  # Staging area
+│   └── raw/           # Original DoE downloads
+├── notebooks/         # Jupyter analysis notebooks
+└── reports/           # Markdown documentation
 
 
 ```
@@ -257,7 +248,6 @@ md-crime
 Our group is going to demonstrate what it looks like to load our data into HDFS then run the code reading from HDFS. From there, we will generate a graphic. 
 
 ### 6.2 Backup Plan
-[What if live demo fails? Screenshots, video recording, etc.]
 
 If the live demo fails, we will produce a video recording of a successful attempt.
 
@@ -265,7 +255,7 @@ If the live demo fails, we will produce a video recording of a successful attemp
 
 ### 6.3 Timeline for Final Week (04DEC)
 
-**Day 1-2:** Have everything loaded in by 25NOV. By 01DEC, join the CSVs into one large parquet. 
+**Day 1-2:** Have everything loaded in by 25NOV. By 01DEC, have working queries and quality analysis. 
 
 **Day 3-4:** By 02DEC, we will complete all visualizations. By 03DEC, add finishing touches and complete Jupyter notebook.
 
@@ -274,21 +264,27 @@ If the live demo fails, we will produce a video recording of a successful attemp
 ## 7. Lessons Learned So Far
 
 ### 7.1 Technical Insights
-- **What worked well:** [e.g., Using Parquet significantly reduced storage]
-- **What was challenging:** [e.g., Debugging distributed shuffle operations]
-- **Key learning:** [e.g., Importance of partitioning strategy]
+- **What worked well:** 
+- Changing data types was simple. The benefits for the small amount of code was highly worth it.
+- **What was challenging:** 
+- HDFS was extremely difficult to set up. The logistical challenges that accompany a school domain are not few, and the intricacies of Java, bashrc, and xml files took a bit of trial and error before coming together.
+- **Key learning:** 
+- Ecosystems are complex. Different programs work well together only when understood, massaged into place, and implemented cohesively.
 
 ### 7.2 Team Process
-- **Effective practices:** [e.g., Daily standups kept everyone aligned]
-- **Improvements needed:** [e.g., Earlier integration testing]
+- **Effective practices:** 
+- We are still learning effective processing techniques. 
+- **Improvements needed:** 
+- Greater communication, understanding of each others work, and mutual vision for a final product.
+
 
 ---
 
 ## 8. References
 
-1. [Reference to documentation used]
-2. [Reference to tutorials or papers]
-3. [Reference to similar projects]
+1. Gemini 3, Thinking Model
+2. Stack Overflow
+3. GeeksForGeeks
 
 ---
 
