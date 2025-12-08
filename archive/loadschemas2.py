@@ -6,7 +6,10 @@ from pyspark.sql.types import (
     StringType,
     IntegerType,
     LongType,
+    FloatType
 )
+from functools import reduce
+from pyspark.sql.functions import col
 
 # ============================================================
 # SPARK SESSION
@@ -17,7 +20,7 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 # ============================================================
-# PATH SETUP (The Critical Fix)
+# PATH SETUP
 # ============================================================
 # 1. Get the absolute path to your LOCAL CSV files
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -25,7 +28,6 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 local_csv_path = os.path.abspath(os.path.join(script_dir, "../../data/datasets_csv"))
 
 # 2. Define Read Paths (Use file:// for local disk)
-# Note the trailing slash!
 base_181920 = f"file://{local_csv_path}/"
 base_212223 = f"file://{local_csv_path}/"
 
@@ -49,45 +51,55 @@ institution_fields = [
     StructField("ZIP", StringType(), True),
     StructField("sector_cd", IntegerType(), True),
     StructField("Sector_desc", StringType(), True),
-    StructField("men_total", IntegerType(), True),
-    StructField("women_total", IntegerType(), True),
-    StructField("Total", IntegerType(), True),
+    StructField("men_total", FloatType(), True),
+    StructField("women_total", FloatType(), True),
+    StructField("Total", FloatType(), True),
 ]
+
+# --- FIX: REMOVED ALL FILTER FIELDS FROM SCHEMAS ---
 
 def make_crime_schema(years):
     offense_codes = ["MURD", "NEG_M", "RAPE", "FONDL", "INCES", "STATR", "ROBBE", "AGG_A", "BURGLA", "VEHIC", "ARSON"]
     fields = []
+    
     for y in years:
         for code in offense_codes:
-            fields.append(StructField(f"{code}{y}", IntegerType(), True))
-        fields.append(StructField(f"FILTER{y}", IntegerType(), True))
+            fields.append(StructField(f"{code}{y}", StringType(), True))
+        # REMOVED: FILTER{y}
+    
     return StructType(institution_fields + fields)
 
 def make_discipline_schema(years):
     fields = []
+    
     for y in years:
         for code in ["WEAPON", "DRUG", "LIQUOR"]:
-            fields.append(StructField(f"{code}{y}", IntegerType(), True))
-        fields.append(StructField(f"FILTER{y}", IntegerType(), True))
+            fields.append(StructField(f"{code}{y}", StringType(), True))
+        # REMOVED: FILTER{y}
+        
     return StructType(institution_fields + fields)
 
 def make_vawa_schema(years):
     fields = []
+    
     for y in years:
         for code in ["DOMEST", "DATING", "STALK"]:
-            fields.append(StructField(f"{code}{y}", IntegerType(), True))
-        fields.append(StructField(f"FILTER{y}", IntegerType(), True))
+            fields.append(StructField(f"{code}{y}", StringType(), True))
+        # REMOVED: FILTER{y}
+        
     return StructType(institution_fields + fields)
 
 def make_hate_schema(years):
     offenses = ["MURD", "RAPE", "FOND", "INCE", "STAT", "ROBBE", "AGG_A", "BURGLA", "VEHIC", "ARSON", "SIM_A", "LAR_T", "INTIM", "VANDAL"]
     suffixes = ["", "_RAC", "_REL", "_SEX", "_GEN", "_GID", "_DIS", "_ET", "_NAT"]
     fields = []
+    
     for y in years:
         for off in offenses:
             for suf in suffixes:
-                fields.append(StructField(f"{off}{suf}{y}", IntegerType(), True))
-        fields.append(StructField(f"FILTER{y}", IntegerType(), True))
+                fields.append(StructField(f"{off}{suf}{y}", StringType(), True))
+        # REMOVED: FILTER{y}
+        
     return StructType(institution_fields + fields)
 
 years_181920 = ["18", "19", "20"]
@@ -115,7 +127,7 @@ def load_csv(spark, path, schema):
 
 # --- 181920 ---
 oncampuscrime181920_df = load_csv(spark, base_181920 + "Oncampuscrime181920.csv", crime_schema_181920)
-# oncampusdiscipline181920_df = load_csv(spark, base_181920 + "Oncampusdiscipline181920.csv", discipline_schema_181920)
+# oncampusdiscipline181920_df = load_csv(spark, base_181920 + "Oncampusdiscipline181920.csv", discipline_schema_181920) THESE DONT EXIST!@!@!@@@@
 oncampushate181920_df = load_csv(spark, base_181920 + "Oncampushate181920.csv", hate_schema_181920)
 oncampusvawa181920_df = load_csv(spark, base_181920 + "Oncampusvawa181920.csv", vawa_schema_181920)
 
@@ -136,7 +148,7 @@ reportedvawa181920_df = load_csv(spark, base_181920 + "Reportedvawa181920.csv", 
 
 # --- 212223 ---
 oncampuscrime212223_df = load_csv(spark, base_212223 + "Oncampuscrime212223.csv", crime_schema_212223)
-# oncampusdiscipline212223_df = load_csv(spark, base_212223 + "Oncampusdiscipline212223.csv", discipline_schema_212223)
+# oncampusdiscipline212223_df = load_csv(spark, base_212223 + "Oncampusdiscipline212223.csv", discipline_schema_212223) THESE DONT EXIST!@!@!@@@@
 oncampushate212223_df = load_csv(spark, base_212223 + "Oncampushate212223.csv", hate_schema_212223)
 oncampusvawa212223_df = load_csv(spark, base_212223 + "Oncampusvawa212223.csv", vawa_schema_212223)
 
@@ -185,7 +197,7 @@ crime = reportedcrime181920_df \
 
 crime.write.mode("overwrite").parquet(f"{hdfs_write_root}/crime.parquet")
 
-# 3. Discipline
+# 3. Discipline (FIX: Including previously missed oncampus DataFrames)
 print("Processing Discipline...")
 discipline = reporteddiscipline181920_df \
     .unionByName(reporteddiscipline212223_df, allowMissingColumns=True) \
@@ -193,8 +205,8 @@ discipline = reporteddiscipline181920_df \
     .unionByName(publicpropertydiscipline212223_df, allowMissingColumns=True) \
     .unionByName(residencehalldiscipline181920_df, allowMissingColumns=True) \
     .unionByName(residencehalldiscipline212223_df, allowMissingColumns=True) \
-    # .unionByName(oncampusdiscipline181920_df, allowMissingColumns=True) \
-    # .unionByName(oncampusdiscipline212223_df, allowMissingColumns=True)
+    # .unionByName(oncampusdiscipline181920_df, allowMissingColumns=True) \THESE DONT EXIST!@!@!@@@@ 
+    # .unionByName(oncampusdiscipline212223_df, allowMissingColumns=True) THESE DONT EXIST!@!@!@@@@
 
 discipline.write.mode("overwrite").parquet(f"{hdfs_write_root}/discipline.parquet")
 

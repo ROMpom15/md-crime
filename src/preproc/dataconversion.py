@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pandas as pd
 
-input_dir = Path("data") / "Datasets"
+input_dir = Path("../../data") / "datasets_x.s"
 
-output_dir = Path("datasets_csv")
+output_dir = Path("../../datasets_csv")
 output_dir.mkdir(exist_ok=True)
 
 for excel_path in input_dir.glob("*.xls*"):
