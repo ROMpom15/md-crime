@@ -1,3 +1,5 @@
+# This is our file to load in our schemas. It's gone through at least 3 different versions, all have been improved and built upon by Gemini.
+
 import os
 from pyspark.sql import SparkSession
 from pyspark.sql.types import (
@@ -25,7 +27,7 @@ spark = SparkSession.builder \
 # ============================================================
 # PATH SETUP
 # ============================================================
-# 1. Get the absolute path to your LOCAL CSV files
+# 1. Get the absolute path to LOCAL CSV files
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # Navigate: src/preproc/ -> src/ -> md-crime/ -> data/datasets_csv/
 local_csv_path = os.path.abspath(os.path.join(script_dir, "../../data/datasets_csv"))
@@ -60,7 +62,7 @@ def load_csv_and_show_schema(spark, path, name):
 # ============================================================
 # DATA LOADING (Capitalized filenames)
 # ============================================================
-
+# we're short on campus disc for both ranges
 # --- 181920 ---
 oncampuscrime181920_df = load_csv_and_show_schema(spark, base_181920 + "Oncampuscrime181920.csv", "oncampuscrime181920_df")
 oncampushate181920_df = load_csv_and_show_schema(spark, base_181920 + "Oncampushate181920.csv", "oncampushate181920_df")
@@ -102,8 +104,8 @@ reportedhate212223_df = load_csv_and_show_schema(spark, base_212223 + "Reportedh
 reportedvawa212223_df = load_csv_and_show_schema(spark, base_212223 + "Reportedvawa212223.csv", "reportedvawa212223_df")
 
 # ============================================================
-# UTILITY FUNCTIONS
-# ============================================================
+# utils
+# use sep fns
 def get_count_columns(df):
     """
     Identifies count columns based on a pattern (ends with two digits for the year)
