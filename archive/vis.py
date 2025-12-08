@@ -1,5 +1,6 @@
 import plotly.io as pio
 
+# Gn
 # 1. Load the figure from the saved JSON file
 try:
     fig = pio.read_json("campus_crime_choropleth.json")
